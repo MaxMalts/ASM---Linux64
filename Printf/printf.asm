@@ -30,11 +30,13 @@ section .text
 ; Destroy:      rdi, rcx, rax
 Strlen:
         mov al, 0
-        mov rcx, 0ffffffffffffffffH
+	xor rcx, rcx
+        dec rcx      ; fffffffffffffffH
 
         repne scasb
 
-        mov rax, 0fffffffffffffffeH
+	xor rax, rax
+        sub rax, 2   ; fffffffffffffffeH
         sub rax, rcx
 
         ret
@@ -237,12 +239,12 @@ Printf:
 				jmp .return	; end of string
 			
 			.jump_table:	dq .case_format_c,
-							dq .case_format_s,
-							dq .case_format_d,
-							dq .case_format_x,
-							dq .case_format_b,
-							dq .case_format_percent,
-							dq .case_format_null
+					dq .case_format_s,
+					dq .case_format_d,
+					dq .case_format_x,
+					dq .case_format_b,
+					dq .case_format_percent,
+					dq .case_format_null
 			
 			.end_switch_format:
 
