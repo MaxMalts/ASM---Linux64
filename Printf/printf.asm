@@ -155,42 +155,14 @@ Printf:
 		cmp byte [rcx], '%'
 		jne .if_not_percent
 			inc rcx
-			mov ah, [rcx]	; format cpecifier
+			xor rax, rax	; Jump table offset
+			mov al, [rcx]	; format cpecifier
 			
 			; Switch format specifier
-			xor rdx, rdx	; table offset
-
-			cmp ah, 'c'
-			je .jump_rdx
-			inc rdx
+			cmp al, 'x'
+			ja .case_format_default
 			
-			cmp ah, 's'
-			je .jump_rdx
-			inc rdx
-
-			cmp ah, 'd'
-			je .jump_rdx
-			inc rdx
-			
-			cmp ah, 'x'
-			je .jump_rdx
-			inc rdx
-			
-			cmp ah, 'b'
-			je .jump_rdx
-			inc rdx
-
-			cmp ah, '%'
-			je .jump_rdx
-			inc rdx
-
-			cmp ah, 0
-			je .jump_rdx
-			inc rdx
-			jmp .end_switch_format
-			
-			.jump_rdx:
-			jmp qword [.jump_table + rdx * 8]
+			jmp qword [.jump_table + rax * 8]
 
 			.case_format_c:
 				pop rdi		; get parameter
@@ -237,14 +209,21 @@ Printf:
 				jmp .end_switch_format
 			.case_format_null:
 				jmp .return	; end of string
+				
+			.case_format_default:
+				jmp .end_switch_format
 			
-			.jump_table:	dq .case_format_c,
-					dq .case_format_s,
-					dq .case_format_d,
-					dq .case_format_x,
-					dq .case_format_b,
+			.jump_table:	dq .case_format_null,
+					times 36d dq .case_format_default
 					dq .case_format_percent,
-					dq .case_format_null
+					times 60d dq .case_format_default
+					dq .case_format_b,
+					dq .case_format_c,
+					dq .case_format_d,
+					times 14d dq .case_format_default
+					dq .case_format_s,
+					times 4d dq .case_format_default
+					dq .case_format_x,
 			
 			.end_switch_format:
 
