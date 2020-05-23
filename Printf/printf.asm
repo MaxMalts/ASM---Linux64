@@ -27,19 +27,19 @@ section .text
 ; Calculates the length of string
 ; Input:	rdi - string address
 ; Output:	rax - length
-; Destroy:      rdi, rcx, rax
+; Destroy:	rdi, rcx, rax
 Strlen:
-        mov al, 0
+	mov al, 0
 	xor rcx, rcx
-        dec rcx      ; fffffffffffffffH
+	dec rcx	  ; fffffffffffffffH
 
-        repne scasb
+	repne scasb
 
 	xor rax, rax
-        sub rax, 2   ; fffffffffffffffeH
-        sub rax, rcx
+	sub rax, 2   ; fffffffffffffffeH
+	sub rax, rcx
 
-        ret
+	ret
 
 
 ; Writes a string to console (must be null-terminated)
@@ -60,7 +60,7 @@ Puts:
 
 ; Converts integer to string in givan base
 ; Input:	eax - number
-; 		ecx - base
+; 			ecx - base
 ; Output:	rdi - address to buffer with required number (null-terminated)
 ; Destroy:	previos number in buffer, eax, edx
 IntToBase:
@@ -214,16 +214,16 @@ Printf:
 				jmp .end_switch_format
 			
 			.jump_table:	dq .case_format_null,
-					times 36d dq .case_format_default
-					dq .case_format_percent,
-					times 60d dq .case_format_default
-					dq .case_format_b,
-					dq .case_format_c,
-					dq .case_format_d,
-					times 14d dq .case_format_default
-					dq .case_format_s,
-					times 4d dq .case_format_default
-					dq .case_format_x,
+							times 36d dq .case_format_default
+							dq .case_format_percent,
+							times 60d dq .case_format_default
+							dq .case_format_b,
+							dq .case_format_c,
+							dq .case_format_d,
+							times 14d dq .case_format_default
+							dq .case_format_s,
+							times 4d dq .case_format_default
+							dq .case_format_x,
 			
 			.end_switch_format:
 
